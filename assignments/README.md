@@ -1,8 +1,8 @@
 # Hands-On Assignment #1: Penetration Testing Lab Setup
 
-## Student: [Your Name]
-## Course: [Course Name]
-## Date: [Submission Date]
+## Student: Depen Tamang
+## Course: MSEE 642
+## Date: 05/17/2026
 
 ---
 
