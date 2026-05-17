@@ -1,6 +1,6 @@
 # Hands-On Assignment #1: Penetration Testing Lab Setup
 
-## Student: Depen Tamang
+## Students: Depen Tamang, Andrew Baze, and Anusha Reddy
 ## Course: MSEE 642
 ## Date: 05/17/2026
 
