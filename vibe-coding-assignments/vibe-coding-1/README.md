@@ -119,4 +119,4 @@ Demonstrates the payload `' OR '1'='1` successfully bypassing login in the vulne
 ### 4. Secure Login Demo
 This shows the secure version where parameterized queries prevent the attack.
 
-![alt text](<images/Screenshot 2026-05-23 at 1.22.48 PM.png>)
+![alt text](<images/Screenshot 2026-05-23 at 1.34.56 PM.png>)
