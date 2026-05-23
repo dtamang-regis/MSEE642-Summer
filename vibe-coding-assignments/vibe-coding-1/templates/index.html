@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SQL Injection Demo - Home</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>SQL Injection Demo</h1>
+            <h2>Vulnerable vs Secure Implementation</h2>
+            <p class="subtitle">Educational demonstration of OWASP A05: Injection</p>
+        </header>
+
+        <main>
+            <div class="intro">
+                <p>
+                    This educational application demonstrates how SQL injection attacks work 
+                    by comparing a vulnerable implementation with a secure implementation.
+                </p>
+                <p>
+                    <strong>Sample Credentials:</strong><br>
+                    Username: <code>admin</code> | Password: <code>admin123</code><br>
+                    Username: <code>user</code> | Password: <code>user123</code>
+                </p>
+            </div>
+
+            <div class="demo-options">
+                <div class="option-card vulnerable">
+                    <h3>⚠️ Vulnerable Login Demo</h3>
+                    <p>
+                        Demonstrates SQL injection vulnerability using string concatenation.
+                        This implementation is <strong>intentionally insecure</strong> for educational purposes.
+                    </p>
+                    <a href="{{ url_for('vulnerable_login') }}" class="btn btn-danger">
+                        Try Vulnerable Demo
+                    </a>
+                </div>
+
+                <div class="option-card secure">
+                    <h3>✅ Secure Login Demo</h3>
+                    <p>
+                        Demonstrates secure implementation using parameterized queries.
+                        This implementation prevents SQL injection attacks.
+                    </p>
+                    <a href="{{ url_for('secure_login') }}" class="btn btn-success">
+                        Try Secure Demo
+                    </a>
+                </div>
+            </div>
+
+            <div class="payloads">
+                <h3>Example SQL Injection Payloads</h3>
+                <div class="payload-box">
+                    <p><strong>Bypass Authentication:</strong></p>
+                    <code>' OR '1'='1</code>
+                </div>
+                <div class="payload-box">
+                    <p><strong>Union-Based Injection:</strong></p>
+                    <code>' UNION SELECT * FROM users --</code>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>
+                ⚠️ This is for educational purposes only. Never use vulnerable code in production.
+            </p>
+        </footer>
+    </div>
+</body>
+</html>

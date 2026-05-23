@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Login Demo - SQL Injection Protection</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>✅ Secure Login Demo</h1>
+            <h2>SQL Injection Protection</h2>
+        </header>
+
+        <main>
+            <div class="success-box">
+                <h3>✅ This implementation uses secure coding practices</h3>
+                <p>
+                    This demo uses <strong>parameterized queries (prepared statements)</strong> 
+                    to prevent SQL injection attacks. This is the recommended approach for production.
+                </p>
+            </div>
+
+            <div class="explanation">
+                <h3>Why is this secure?</h3>
+                <p>
+                    The backend code uses parameterized queries with placeholders (?) instead of 
+                    string concatenation:
+                </p>
+                <pre><code>query = "SELECT * FROM users WHERE username = ? AND password = ?"
+cursor.execute(query, (username, password))</code></pre>
+                <p>
+                    The database treats the parameters as data, not as executable code. 
+                    Even if an attacker enters <code>' OR '1'='1</code>, it's treated as a literal 
+                    string value, not as SQL syntax.
+                </p>
+                <p>
+                    This means the query will look for a user with the literal username 
+                    <code>' OR '1'='1</code> (which doesn't exist), rather than executing it as SQL logic.
+                </p>
+            </div>
+
+            <div class="login-form-container">
+                <form method="POST" action="{{ url_for('secure_login') }}">
+                    <div class="form-group">
+                        <label for="username">Username:</label>
+                        <input type="text" id="username" name="username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password:</label>
+                        <input type="text" id="password" name="password" required>
+                    </div>
+                    <button type="submit" class="btn btn-success">Login (Secure)</button>
+                </form>
+            </div>
+
+            {% if message %}
+            <div class="message-box {{ 'success' if success else 'error' }}">
+                <p>{{ message }}</p>
+            </div>
+            {% endif %}
+
+            {% if query_info %}
+            <div class="query-info">
+                <h3>Query Information:</h3>
+                <pre><code>{{ query_info }}</code></pre>
+            </div>
+            {% endif %}
+
+            <div class="test-cases">
+                <h3>Try These Test Cases:</h3>
+                <div class="test-case">
+                    <p><strong>Valid Login:</strong></p>
+                    <p>Username: <code>admin</code> | Password: <code>admin123</code></p>
+                </div>
+                <div class="test-case">
+                    <p><strong>SQL Injection Attack (will fail):</strong></p>
+                    <p>Username: <code>admin</code> | Password: <code>' OR '1'='1</code></p>
+                </div>
+                <div class="test-case">
+                    <p><strong>Invalid Credentials:</strong></p>
+                    <p>Username: <code>admin</code> | Password: <code>wrongpassword</code></p>
+                </div>
+            </div>
+
+            <div class="back-link">
+                <a href="{{ url_for('index') }}" class="btn btn-secondary">← Back to Home</a>
+            </div>
+        </main>
+
+        <footer>
+            <p>
+                ✅ Always use parameterized queries in production to prevent SQL injection.
+            </p>
+        </footer>
+    </div>
+</body>
+</html>

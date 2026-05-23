@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vulnerable Login Demo - SQL Injection</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>⚠️ Vulnerable Login Demo</h1>
+            <h2>SQL Injection Vulnerability</h2>
+        </header>
+
+        <main>
+            <div class="warning-box">
+                <h3>⚠️ WARNING: This implementation is intentionally vulnerable</h3>
+                <p>
+                    This demo uses <strong>string concatenation</strong> to build SQL queries, 
+                    which makes it vulnerable to SQL injection attacks. 
+                    Never use this approach in production!
+                </p>
+            </div>
+
+            <div class="explanation">
+                <h3>Why is this vulnerable?</h3>
+                <p>
+                    The backend code constructs the SQL query by directly concatenating user input 
+                    into the query string:
+                </p>
+                <pre><code>query = f"SELECT * FROM users WHERE username = '{username}' AND password = '{password}'"</code></pre>
+                <p>
+                    An attacker can manipulate the input to change the query's logic. 
+                    For example, entering <code>' OR '1'='1</code> as the password transforms 
+                    the query into:
+                </p>
+                <pre><code>SELECT * FROM users WHERE username = 'admin' AND password = '' OR '1'='1'</code></pre>
+                <p>
+                    Since <code>'1'='1'</code> is always true, the query returns all users, 
+                    bypassing authentication.
+                </p>
+            </div>
+
+            <div class="login-form-container">
+                <form method="POST" action="{{ url_for('vulnerable_login') }}">
+                    <div class="form-group">
+                        <label for="username">Username:</label>
+                        <input type="text" id="username" name="username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password:</label>
+                        <input type="text" id="password" name="password" required>
+                    </div>
+                    <button type="submit" class="btn btn-danger">Login (Vulnerable)</button>
+                </form>
+            </div>
+
+            {% if message %}
+            <div class="message-box {{ 'success' if success else 'error' }}">
+                <p>{{ message }}</p>
+            </div>
+            {% endif %}
+
+            {% if query_info %}
+            <div class="query-info">
+                <h3>Query Information:</h3>
+                <pre><code>{{ query_info }}</code></pre>
+            </div>
+            {% endif %}
+
+            <div class="test-cases">
+                <h3>Try These Test Cases:</h3>
+                <div class="test-case">
+                    <p><strong>Valid Login:</strong></p>
+                    <p>Username: <code>admin</code> | Password: <code>admin123</code></p>
+                </div>
+                <div class="test-case">
+                    <p><strong>SQL Injection Attack:</strong></p>
+                    <p>Username: <code>admin</code> | Password: <code>' OR '1'='1</code></p>
+                </div>
+                <div class="test-case">
+                    <p><strong>Another Attack:</strong></p>
+                    <p>Username: <code>admin</code> | Password: <code>' OR '1'='1' --</code></p>
+                </div>
+            </div>
+
+            <div class="back-link">
+                <a href="{{ url_for('index') }}" class="btn btn-secondary">← Back to Home</a>
+            </div>
+        </main>
+
+        <footer>
+            <p>
+                ⚠️ This is for educational purposes only. Never use vulnerable code in production.
+            </p>
+        </footer>
+    </div>
+</body>
+</html>
