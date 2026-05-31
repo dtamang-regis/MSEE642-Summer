@@ -34,7 +34,7 @@ Input validation is necessary to reduce the risk of attacks such as SQL injectio
 
 ## Part 2A — Architecture Diagram
 
-![alt text](<../assignments/images/Screenshot 2026-05-23 at 12.55.50 PM.png>)
+![alt text](<images/Screenshot 2026-05-23 at 12.55.50 PM.png>)
 
 ### System Architecture Overview
 
