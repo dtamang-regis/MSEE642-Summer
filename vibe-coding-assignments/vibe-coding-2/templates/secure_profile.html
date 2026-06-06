@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Profile - Broken Access Control</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>✅ Secure Profile View</h1>
+            <h2>IDOR Prevention Demonstration</h2>
+        </header>
+
+        <main>
+            <div class="success-box">
+                <h3>✅ SECURE: Viewing Your Own Profile Only</h3>
+                <p>
+                    You are viewing your own profile. The application verified that the requested 
+                    profile ID belongs to you before granting access.
+                </p>
+            </div>
+
+            <div class="explanation">
+                <h3>Why is this secure?</h3>
+                <p>
+                    The profile endpoint <code>/secure/profile/&lt;user_id&gt;</code> verifies that the 
+                    requested user_id belongs to the currently logged-in user. Users cannot view other 
+                    users' profiles by changing the ID in the URL.
+                </p>
+                <pre><code># SECURE CODE (in app.py):
+@app.route('/secure/profile/<int:user_id>')
+def secure_profile(user_id):
+    current_user_id = session.get('secure_user_id')
+    
+    # CHECK if user_id belongs to current user!
+    if current_user_id != user_id:
+        return render_template('secure_403.html'), 403
+    
+    profile_user = conn.execute('SELECT * FROM users WHERE id = ?', 
+                               (user_id,)).fetchone()
+    return render_template('secure_profile.html', ...)</code></pre>
+                <p>
+                    <strong>What happens with different user_id:</strong>
+                </p>
+                <pre><code># Users trying to access other profiles receive:
+return render_template('secure_403.html'), 403</code></pre>
+            </div>
+
+            <div class="profile-card">
+                <h3>User Profile</h3>
+                <div class="profile-details">
+                    <p><strong>User ID:</strong> {{ profile_user['id'] }}</p>
+                    <p><strong>Username:</strong> {{ profile_user['username'] }}</p>
+                    <p><strong>Role:</strong> {{ profile_user['role'] }}</p>
+                    <p><strong>Your User ID:</strong> {{ current_user_id }}</p>
+                </div>
+
+                <div class="secure-confirmation">
+                    <p>
+                        <strong>Security Confirmation:</strong> You (User ID: {{ current_user_id }}) are viewing 
+                        your own profile (User ID: {{ profile_user['id'] }}). Access control is working correctly!
+                    </p>
+                </div>
+            </div>
+
+            <div class="test-cases">
+                <h3>Test IDOR Protection</h3>
+                <p>
+                    Try accessing other users' profiles by changing the URL:
+                </p>
+                <div class="test-links">
+                    <a href="{{ url_for('secure_profile', user_id=1) }}" class="btn btn-secondary">
+                        Try Admin Profile (ID: 1)
+                    </a>
+                    <a href="{{ url_for('secure_profile', user_id=2) }}" class="btn btn-secondary">
+                        Try User Profile (ID: 2)
+                    </a>
+                    <a href="{{ url_for('secure_profile', user_id=3) }}" class="btn btn-secondary">
+                        Try User2 Profile (ID: 3)
+                    </a>
+                </div>
+                <p class="hint">
+                    You will receive 403 Access Denied when trying to view other profiles!
+                </p>
+            </div>
+
+            <div class="back-link">
+                <a href="{{ url_for('secure_dashboard') }}" class="btn btn-secondary">← Back to Dashboard</a>
+                <a href="{{ url_for('secure_logout') }}" class="btn btn-secondary">Logout</a>
+            </div>
+        </main>
+
+        <footer>
+            <p>
+                ✅ This demonstrates secure coding practices for access control.
+            </p>
+        </footer>
+    </div>
+</body>
+</html>

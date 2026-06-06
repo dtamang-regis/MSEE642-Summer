@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Broken Access Control Demo - Home</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Broken Access Control Demo</h1>
+            <h2>Vulnerable vs Secure Implementation</h2>
+            <p class="subtitle">Educational demonstration of OWASP A01: Broken Access Control</p>
+        </header>
+
+        <main>
+            <div class="intro">
+                <p>
+                    This educational application demonstrates how Broken Access Control vulnerabilities work 
+                    by comparing a vulnerable implementation with a secure implementation.
+                </p>
+                <p>
+                    <strong>What is Broken Access Control?</strong><br>
+                    Broken Access Control occurs when users can access resources or perform actions 
+                    outside their intended permissions. This is currently ranked as <strong>A01:2025</strong> 
+                    in the OWASP Top 10.
+                </p>
+                <p>
+                    <strong>Sample Credentials:</strong><br>
+                    Admin: <code>admin</code> / <code>admin123</code><br>
+                    User: <code>user</code> / <code>user123</code><br>
+                    User2: <code>user2</code> / <code>user123</code>
+                </p>
+            </div>
+
+            <div class="demo-options">
+                <div class="option-card vulnerable">
+                    <h3>⚠️ Vulnerable Demo</h3>
+                    <p>
+                        Demonstrates Broken Access Control vulnerabilities including:
+                        <br>• Unauthorized admin panel access
+                        <br>• IDOR (Insecure Direct Object Reference)
+                        <br>• Missing role-based access control
+                        <br>This implementation is <strong>intentionally insecure</strong> for educational purposes.
+                    </p>
+                    <a href="{{ url_for('vulnerable_index') }}" class="btn btn-danger">
+                        Try Vulnerable Demo
+                    </a>
+                </div>
+
+                <div class="option-card secure">
+                    <h3>✅ Secure Demo</h3>
+                    <p>
+                        Demonstrates secure implementation with:
+                        <br>• Proper role-based access control
+                        <br>• IDOR prevention
+                        <br>• Protected admin endpoints
+                        <br>This implementation prevents access control attacks.
+                    </p>
+                    <a href="{{ url_for('secure_index') }}" class="btn btn-success">
+                        Try Secure Demo
+                    </a>
+                </div>
+            </div>
+
+            <div class="vulnerabilities">
+                <h3>Vulnerabilities Demonstrated</h3>
+                <div class="vuln-box">
+                    <p><strong>1. Unauthorized Admin Access:</strong></p>
+                    <p>Regular users can access the admin panel by directly typing the URL</p>
+                </div>
+                <div class="vuln-box">
+                    <p><strong>2. IDOR (Insecure Direct Object Reference):</strong></p>
+                    <p>Users can view other users' profiles by changing the ID in the URL</p>
+                </div>
+                <div class="vuln-box">
+                    <p><strong>3. Missing Role Checks:</strong></p>
+                    <p>Admin-only actions are visible and executable by all users</p>
+                </div>
+            </div>
+
+            <div class="screenshots-link">
+                <a href="{{ url_for('screenshots') }}" class="btn btn-secondary">
+                    View Required Screenshots
+                </a>
+            </div>
+        </main>
+
+        <footer>
+            <p>
+                ⚠️ This is for educational purposes only. Never use vulnerable code in production.
+            </p>
+        </footer>
+    </div>
+</body>
+</html>

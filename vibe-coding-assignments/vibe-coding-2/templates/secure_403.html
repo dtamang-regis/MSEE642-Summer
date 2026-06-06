@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>403 Access Denied - Secure Demo</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🚫 403 Access Denied</h1>
+            <h2>Secure Access Control in Action</h2>
+        </header>
+
+        <main>
+            <div class="success-box">
+                <h3>✅ ACCESS CONTROL WORKING CORRECTLY</h3>
+                <p>
+                    Your access attempt has been blocked by the secure access control system. 
+                    This is the expected behavior when a user tries to access a resource they 
+                    are not authorized to view.
+                </p>
+            </div>
+
+            <div class="explanation">
+                <h3>Why did you get this error?</h3>
+                <p>
+                    The secure implementation properly checks user permissions before granting 
+                    access to sensitive resources. This prevents:
+                </p>
+                <ul>
+                    <li><strong>Unauthorized admin access:</strong> Regular users cannot access admin panels</li>
+                    <li><strong>IDOR attacks:</strong> Users cannot view other users' profiles</li>
+                    <li><strong>Privilege escalation:</strong> Users cannot perform actions outside their role</li>
+                </ul>
+                <p>
+                    This 403 error demonstrates that the access control system is working correctly 
+                    to protect sensitive resources.
+                </p>
+            </div>
+
+            <div class="security-confirmation">
+                <h3>Security Confirmation</h3>
+                <p>
+                    The application successfully prevented unauthorized access by:
+                </p>
+                <ol>
+                    <li>Verifying your user role before granting access</li>
+                    <li>Checking if the requested resource belongs to you</li>
+                    <li>Returning a 403 Forbidden status when access is denied</li>
+                </ol>
+            </div>
+
+            <div class="back-link">
+                <a href="{{ url_for('secure_dashboard') }}" class="btn btn-secondary">← Back to Dashboard</a>
+                <a href="{{ url_for('secure_logout') }}" class="btn btn-secondary">Logout</a>
+                <a href="{{ url_for('index') }}" class="btn btn-secondary">Back to Home</a>
+            </div>
+        </main>
+
+        <footer>
+            <p>
+                ✅ This demonstrates secure coding practices for access control.
+            </p>
+        </footer>
+    </div>
+</body>
+</html>

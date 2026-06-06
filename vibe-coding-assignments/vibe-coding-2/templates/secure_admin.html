@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Admin Panel - Broken Access Control</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>✅ Secure Admin Panel</h1>
+            <h2>Accessed by: {{ username }} ({{ role }})</h2>
+        </header>
+
+        <main>
+            <div class="success-box">
+                <h3>✅ SECURE: Role check enforced on admin endpoint</h3>
+                <p>
+                    You are viewing the admin panel because you have the admin role. 
+                    Regular users would receive a 403 Access Denied error.
+                </p>
+            </div>
+
+            <div class="explanation">
+                <h3>Why is this secure?</h3>
+                <p>
+                    The <code>/secure/admin</code> endpoint checks if the logged-in user 
+                    has the admin role before granting access. This prevents unauthorized 
+                    access even if a user knows the URL.
+                </p>
+                <pre><code># SECURE CODE (in app.py):
+@app.route('/secure/admin')
+def secure_admin():
+    if 'secure_user_id' not in session:
+        return redirect(url_for('secure_login'))
+    
+    # ROLE CHECK HERE!
+    if session.get('secure_role') != 'admin':
+        return render_template('secure_403.html'), 403
+    
+    return render_template('secure_admin.html', ...)</code></pre>
+                <p>
+                    <strong>What happens without admin role:</strong>
+                </p>
+                <pre><code># Non-admin users receive:
+return render_template('secure_403.html'), 403</code></pre>
+            </div>
+
+            <div class="admin-panel-content">
+                <h3>Admin Panel Content</h3>
+                <p>
+                    You are legitimately logged in as an admin. This is expected behavior 
+                    in the secure implementation.
+                </p>
+
+                <div class="admin-actions-list">
+                    <h4>Admin Functions (Simulated)</h4>
+                    <ul>
+                        <li>Delete user accounts</li>
+                        <li>Modify system settings</li>
+                        <li>View all user data</li>
+                        <li>Export sensitive data</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="test-cases">
+                <h3>Security Test</h3>
+                <p>
+                    Try logging out and logging in as a regular user (<code>user</code> / <code>user123</code>), 
+                    then try to access <code>/secure/admin</code> directly. You should receive a 403 error.
+                </p>
+            </div>
+
+            <div class="back-link">
+                <a href="{{ url_for('secure_dashboard') }}" class="btn btn-secondary">← Back to Dashboard</a>
+                <a href="{{ url_for('secure_logout') }}" class="btn btn-secondary">Logout</a>
+            </div>
+        </main>
+
+        <footer>
+            <p>
+                ✅ This demonstrates secure coding practices for access control.
+            </p>
+        </footer>
+    </div>
+</body>
+</html>

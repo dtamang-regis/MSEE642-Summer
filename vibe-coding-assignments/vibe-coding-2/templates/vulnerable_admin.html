@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vulnerable Admin Panel - Broken Access Control</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>⚠️ Vulnerable Admin Panel</h1>
+            <h2>Accessed by: {{ username }} ({{ role }})</h2>
+        </header>
+
+        <main>
+            <div class="warning-box">
+                <h3>⚠️ CRITICAL VULNERABILITY: No role check on admin endpoint</h3>
+                <p>
+                    You are viewing the admin panel. If you are NOT an admin, this demonstrates 
+                    a severe broken access control vulnerability.
+                </p>
+            </div>
+
+            <div class="explanation">
+                <h3>Why is this vulnerable?</h3>
+                <p>
+                    The <code>/vulnerable/admin</code> endpoint does not check if the logged-in user 
+                    has the admin role. It only checks if the user is logged in. This means <strong>any 
+                    logged-in user</strong> can access this sensitive admin panel by simply typing the URL.
+                </p>
+                <pre><code># VULNERABLE CODE (in app.py):
+@app.route('/vulnerable/admin')
+def vulnerable_admin():
+    if 'vulnerable_user_id' not in session:
+        return redirect(url_for('vulnerable_login'))
+    # NO ROLE CHECK HERE!
+    return render_template('vulnerable_admin.html', ...)</code></pre>
+                <p>
+                    <strong>Secure implementation would check:</strong>
+                </p>
+                <pre><code># SECURE CODE:
+if session.get('role') != 'admin':
+    return render_template('403.html'), 403</code></pre>
+            </div>
+
+            <div class="admin-panel-content">
+                <h3>Admin Panel Content</h3>
+                <p>
+                    {% if role == 'admin' %}
+                    You are legitimately logged in as an admin. This is expected behavior.
+                    {% else %}
+                    <strong>SECURITY BREACH:</strong> You are logged in as a regular user ({{ role }}) 
+                    but have successfully accessed the admin panel. This should not be possible!
+                    {% endif %}
+                </p>
+
+                <div class="admin-actions-list">
+                    <h4>Admin Functions (Simulated)</h4>
+                    <ul>
+                        <li>Delete user accounts</li>
+                        <li>Modify system settings</li>
+                        <li>View all user data</li>
+                        <li>Export sensitive data</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="back-link">
+                <a href="{{ url_for('vulnerable_dashboard') }}" class="btn btn-secondary">← Back to Dashboard</a>
+                <a href="{{ url_for('vulnerable_logout') }}" class="btn btn-secondary">Logout</a>
+            </div>
+        </main>
+
+        <footer>
+            <p>
+                ⚠️ This is for educational purposes only. Never use vulnerable code in production.
+            </p>
+        </footer>
+    </div>
+</body>
+</html>

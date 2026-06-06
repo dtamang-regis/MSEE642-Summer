@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Dashboard - Broken Access Control</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>✅ Secure Dashboard</h1>
+            <h2>Logged in as: {{ username }} ({{ role }})</h2>
+        </header>
+
+        <main>
+            {% if show_admin_actions %}
+            <div class="success-box">
+                <h3>✅ Admin actions visible only to admins</h3>
+                <p>
+                    You are logged in as an admin, so admin actions are displayed. 
+                    Regular users will not see these actions.
+                </p>
+            </div>
+            {% else %}
+            <div class="success-box">
+                <h3>✅ Admin actions hidden from regular users</h3>
+                <p>
+                    You are logged in as a regular user ({{ role }}). Admin actions are hidden 
+                    and protected by server-side role checks.
+                </p>
+            </div>
+            {% endif %}
+
+            <div class="explanation">
+                <h3>Why is this secure?</h3>
+                <p>
+                    The dashboard only shows admin actions to users with the admin role. 
+                    This is implemented both on the frontend (hiding UI elements) and 
+                    on the backend (role-based access control).
+                </p>
+                <p>
+                    <strong>Your current role:</strong> {{ role }}
+                </p>
+                {% if role == 'admin' %}
+                <p class="highlight">
+                    You have admin privileges and can access admin functions.
+                </p>
+                {% else %}
+                <p class="highlight">
+                    You have regular user privileges. Admin actions are hidden and protected.
+                </p>
+                {% endif %}
+            </div>
+
+            <div class="user-actions">
+                <h3>User Actions</h3>
+                <div class="action-card">
+                    <h4>My Profile</h4>
+                    <p>View your own profile</p>
+                    <a href="{{ url_for('secure_profile', user_id=1 if username == 'admin' else 2 if username == 'user' else 3) }}" class="btn btn-secondary">
+                        View Profile
+                    </a>
+                </div>
+            </div>
+
+            {% if show_admin_actions %}
+            <div class="admin-actions">
+                <h3>✅ Admin Actions (Only Visible to Admins)</h3>
+                <div class="action-card secure">
+                    <h4>Admin Panel</h4>
+                    <p>Access the admin control panel</p>
+                    <a href="{{ url_for('secure_admin') }}" class="btn btn-success">
+                        Access Admin Panel
+                    </a>
+                    <p class="hint">Only admins can access this endpoint</p>
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="idor-test">
+                <h3>Test IDOR Protection</h3>
+                <p>
+                    Try accessing other users' profiles by changing the URL:
+                </p>
+                <div class="test-links">
+                    <a href="{{ url_for('secure_profile', user_id=1) }}" class="btn btn-secondary">
+                        Try Admin Profile (ID: 1)
+                    </a>
+                    <a href="{{ url_for('secure_profile', user_id=2) }}" class="btn btn-secondary">
+                        Try User Profile (ID: 2)
+                    </a>
+                    <a href="{{ url_for('secure_profile', user_id=3) }}" class="btn btn-secondary">
+                        Try User2 Profile (ID: 3)
+                    </a>
+                </div>
+                <p class="hint">
+                    As a regular user, you will get 403 Access Denied when trying to view other profiles!
+                </p>
+            </div>
+
+            <div class="back-link">
+                <a href="{{ url_for('secure_logout') }}" class="btn btn-secondary">Logout</a>
+                <a href="{{ url_for('index') }}" class="btn btn-secondary">Back to Home</a>
+            </div>
+        </main>
+
+        <footer>
+            <p>
+                ✅ This demonstrates secure coding practices for access control.
+            </p>
+        </footer>
+    </div>
+</body>
+</html>

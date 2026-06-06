@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vulnerable Demo - Broken Access Control</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>⚠️ Vulnerable Demo</h1>
+            <h2>Broken Access Control</h2>
+            <p class="subtitle">Educational demonstration of access control vulnerabilities</p>
+        </header>
+
+        <main>
+            <div class="warning-box">
+                <h3>⚠️ WARNING: This implementation is intentionally vulnerable</h3>
+                <p>
+                    This demo demonstrates common Broken Access Control vulnerabilities including 
+                    unauthorized admin access, IDOR (Insecure Direct Object Reference), and missing 
+                    role-based access control. Never use this approach in production!
+                </p>
+            </div>
+
+            <div class="explanation">
+                <h3>What makes this vulnerable?</h3>
+                <p>
+                    <strong>1. No Role-Based Access Control (RBAC):</strong><br>
+                    The application does not check user roles before granting access to sensitive endpoints.
+                    Any logged-in user can access the admin panel by simply typing the URL.
+                </p>
+                <p>
+                    <strong>2. IDOR (Insecure Direct Object Reference):</strong><br>
+                    Users can access other users' profiles by changing the ID in the URL. 
+                    The application doesn't verify if the requested resource belongs to the current user.
+                </p>
+                <p>
+                    <strong>3. Missing Authorization Checks:</strong><br>
+                    Admin-only actions are visible and executable by all users, regardless of their role.
+                </p>
+            </div>
+
+            <div class="login-form-container">
+                <h3>Login to Vulnerable Demo</h3>
+                <form method="POST" action="{{ url_for('vulnerable_login') }}">
+                    <div class="form-group">
+                        <label for="username">Username:</label>
+                        <input type="text" id="username" name="username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password:</label>
+                        <input type="password" id="password" name="password" required>
+                    </div>
+                    <button type="submit" class="btn btn-danger">Login (Vulnerable)</button>
+                </form>
+            </div>
+
+            <div class="test-cases">
+                <h3>Try These Test Cases:</h3>
+                <div class="test-case">
+                    <p><strong>Login as Regular User:</strong></p>
+                    <p>Username: <code>user</code> | Password: <code>user123</code></p>
+                    <p class="hint">Then try to access <code>/vulnerable/admin</code> directly</p>
+                </div>
+                <div class="test-case">
+                    <p><strong>IDOR Attack:</strong></p>
+                    <p>Login as <code>user</code>, then try accessing <code>/vulnerable/profile/1</code> (admin's profile)</p>
+                </div>
+                <div class="test-case">
+                    <p><strong>Login as Admin:</strong></p>
+                    <p>Username: <code>admin</code> | Password: <code>admin123</code></p>
+                </div>
+            </div>
+
+            <div class="back-link">
+                <a href="{{ url_for('index') }}" class="btn btn-secondary">← Back to Home</a>
+            </div>
+        </main>
+
+        <footer>
+            <p>
+                ⚠️ This is for educational purposes only. Never use vulnerable code in production.
+            </p>
+        </footer>
+    </div>
+</body>
+</html>

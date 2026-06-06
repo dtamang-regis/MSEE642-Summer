@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vulnerable Dashboard - Broken Access Control</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>⚠️ Vulnerable Dashboard</h1>
+            <h2>Logged in as: {{ username }} ({{ role }})</h2>
+        </header>
+
+        <main>
+            <div class="warning-box">
+                <h3>⚠️ VULNERABILITY: Admin actions visible to all users</h3>
+                <p>
+                    Notice that admin actions are displayed below regardless of your role.
+                    This is a broken access control vulnerability.
+                </p>
+            </div>
+
+            <div class="explanation">
+                <h3>Why is this vulnerable?</h3>
+                <p>
+                    The dashboard shows admin actions to <strong>all logged-in users</strong> without 
+                    checking their role. In a secure implementation, these actions should only be visible 
+                    and accessible to users with the admin role.
+                </p>
+                <p>
+                    <strong>Your current role:</strong> {{ role }}
+                </p>
+                {% if role != 'admin' %}
+                <p class="highlight">
+                    You are logged in as a regular user, but you can still see and access admin actions!
+                </p>
+                {% endif %}
+            </div>
+
+            <div class="user-actions">
+                <h3>User Actions</h3>
+                <div class="action-card">
+                    <h4>My Profile</h4>
+                    <p>View your own profile</p>
+                    <a href="{{ url_for('vulnerable_profile', user_id=1 if username == 'admin' else 2 if username == 'user' else 3) }}" class="btn btn-secondary">
+                        View Profile
+                    </a>
+                </div>
+            </div>
+
+            {% if show_admin_actions %}
+            <div class="admin-actions">
+                <h3>⚠️ Admin Actions (VULNERABLE - Visible to Everyone)</h3>
+                <div class="action-card vulnerable">
+                    <h4>Admin Panel</h4>
+                    <p>Access the admin control panel</p>
+                    <a href="{{ url_for('vulnerable_admin') }}" class="btn btn-danger">
+                        Access Admin Panel
+                    </a>
+                    <p class="hint">Try clicking this even if you're not an admin!</p>
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="idor-test">
+                <h3>Test IDOR Vulnerability</h3>
+                <p>
+                    Try accessing other users' profiles by changing the URL:
+                </p>
+                <div class="test-links">
+                    <a href="{{ url_for('vulnerable_profile', user_id=1) }}" class="btn btn-secondary">
+                        View Admin Profile (ID: 1)
+                    </a>
+                    <a href="{{ url_for('vulnerable_profile', user_id=2) }}" class="btn btn-secondary">
+                        View User Profile (ID: 2)
+                    </a>
+                    <a href="{{ url_for('vulnerable_profile', user_id=3) }}" class="btn btn-secondary">
+                        View User2 Profile (ID: 3)
+                    </a>
+                </div>
+                <p class="hint">
+                    As a regular user, you can view ALL profiles - this is the IDOR vulnerability!
+                </p>
+            </div>
+
+            <div class="back-link">
+                <a href="{{ url_for('vulnerable_logout') }}" class="btn btn-secondary">Logout</a>
+                <a href="{{ url_for('index') }}" class="btn btn-secondary">Back to Home</a>
+            </div>
+        </main>
+
+        <footer>
+            <p>
+                ⚠️ This is for educational purposes only. Never use vulnerable code in production.
+            </p>
+        </footer>
+    </div>
+</body>
+</html>

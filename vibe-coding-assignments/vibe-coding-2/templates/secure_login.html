@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Login - Broken Access Control</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>✅ Secure Login</h1>
+            <h2>Proper Access Control Demo</h2>
+        </header>
+
+        <main>
+            <div class="success-box">
+                <h3>✅ This implementation uses proper session management</h3>
+                <p>
+                    This login system implements proper session management with role-based access control.
+                    Admin endpoints are protected with role verification.
+                </p>
+            </div>
+
+            <div class="explanation">
+                <h3>Why is this secure?</h3>
+                <p>
+                    The secure login system implements these security measures:
+                </p>
+                <pre><code># Proper session validation
+# Role-based access control (RBAC)
+# Admin endpoints protected with role checks
+# IDOR prevention on profile access</code></pre>
+                <p>
+                    Once logged in, users can only access endpoints appropriate to their role. 
+                    Admin endpoints return 403 Forbidden for non-admin users.
+                </p>
+            </div>
+
+            <div class="login-form-container">
+                <form method="POST" action="{{ url_for('secure_login') }}">
+                    <div class="form-group">
+                        <label for="username">Username:</label>
+                        <input type="text" id="username" name="username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password:</label>
+                        <input type="password" id="password" name="password" required>
+                    </div>
+                    <button type="submit" class="btn btn-success">Login (Secure)</button>
+                </form>
+            </div>
+
+            {% if error %}
+            <div class="message-box error">
+                <p>{{ error }}</p>
+            </div>
+            {% endif %}
+
+            <div class="test-cases">
+                <h3>Test Credentials:</h3>
+                <div class="test-case">
+                    <p><strong>Admin:</strong> <code>admin</code> / <code>admin123</code></p>
+                </div>
+                <div class="test-case">
+                    <p><strong>Regular User:</strong> <code>user</code> / <code>user123</code></p>
+                </div>
+                <div class="test-case">
+                    <p><strong>Another User:</strong> <code>user2</code> / <code>user123</code></p>
+                </div>
+            </div>
+
+            <div class="back-link">
+                <a href="{{ url_for('secure_index') }}" class="btn btn-secondary">← Back to Secure Demo</a>
+            </div>
+        </main>
+
+        <footer>
+            <p>
+                ✅ This demonstrates secure coding practices for access control.
+            </p>
+        </footer>
+    </div>
+</body>
+</html>

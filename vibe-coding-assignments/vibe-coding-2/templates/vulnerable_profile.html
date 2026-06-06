@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vulnerable Profile - Broken Access Control</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>⚠️ Vulnerable Profile View</h1>
+            <h2>IDOR Vulnerability Demonstration</h2>
+        </header>
+
+        <main>
+            {% if is_idor %}
+            <div class="warning-box">
+                <h3>⚠️ IDOR VULNERABILITY DETECTED</h3>
+                <p>
+                    You are viewing another user's profile! This is an Insecure Direct Object Reference (IDOR) 
+                    vulnerability. You should only be able to view your own profile.
+                </p>
+            </div>
+            {% else %}
+            <div class="success-box">
+                <h3>✅ Viewing Your Own Profile</h3>
+                <p>
+                    You are viewing your own profile. This is expected behavior.
+                </p>
+            </div>
+            {% endif %}
+
+            <div class="explanation">
+                <h3>Why is this vulnerable?</h3>
+                <p>
+                    The profile endpoint <code>/vulnerable/profile/&lt;user_id&gt;</code> does not verify 
+                    that the requested user_id belongs to the currently logged-in user. Any user can change 
+                    the ID in the URL to view other users' profiles.
+                </p>
+                <pre><code># VULNERABLE CODE (in app.py):
+@app.route('/vulnerable/profile/<int:user_id>')
+def vulnerable_profile(user_id):
+    # NO CHECK if user_id belongs to current user!
+    profile_user = conn.execute('SELECT * FROM users WHERE id = ?', 
+                               (user_id,)).fetchone()
+    return render_template('vulnerable_profile.html', ...)</code></pre>
+                <p>
+                    <strong>Secure implementation would check:</strong>
+                </p>
+                <pre><code># SECURE CODE:
+current_user_id = session.get('user_id')
+if current_user_id != user_id:
+    return render_template('403.html'), 403</code></pre>
+            </div>
+
+            <div class="profile-card">
+                <h3>User Profile</h3>
+                <div class="profile-details">
+                    <p><strong>User ID:</strong> {{ profile_user['id'] }}</p>
+                    <p><strong>Username:</strong> {{ profile_user['username'] }}</p>
+                    <p><strong>Role:</strong> {{ profile_user['role'] }}</p>
+                    <p><strong>Your User ID:</strong> {{ current_user_id }}</p>
+                </div>
+
+                {% if is_idor %}
+                <div class="idor-warning">
+                    <p>
+                        <strong>Security Issue:</strong> You (User ID: {{ current_user_id }}) are viewing 
+                        the profile of User ID: {{ profile_user['id'] }}. This should not be allowed!
+                    </p>
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="test-cases">
+                <h3>Try Other Profiles</h3>
+                <div class="test-links">
+                    <a href="{{ url_for('vulnerable_profile', user_id=1) }}" class="btn btn-secondary">
+                        Admin Profile (ID: 1)
+                    </a>
+                    <a href="{{ url_for('vulnerable_profile', user_id=2) }}" class="btn btn-secondary">
+                        User Profile (ID: 2)
+                    </a>
+                    <a href="{{ url_for('vulnerable_profile', user_id=3) }}" class="btn btn-secondary">
+                        User2 Profile (ID: 3)
+                    </a>
+                </div>
+            </div>
+
+            <div class="back-link">
+                <a href="{{ url_for('vulnerable_dashboard') }}" class="btn btn-secondary">← Back to Dashboard</a>
+                <a href="{{ url_for('vulnerable_logout') }}" class="btn btn-secondary">Logout</a>
+            </div>
+        </main>
+
+        <footer>
+            <p>
+                ⚠️ This is for educational purposes only. Never use vulnerable code in production.
+            </p>
+        </footer>
+    </div>
+</body>
+</html>

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vulnerable Login - Broken Access Control</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>⚠️ Vulnerable Login</h1>
+            <h2>Broken Access Control Demo</h2>
+        </header>
+
+        <main>
+            <div class="warning-box">
+                <h3>⚠️ WARNING: This implementation is intentionally vulnerable</h3>
+                <p>
+                    This login system lacks proper session management and role-based access control.
+                    Any logged-in user can access admin endpoints.
+                </p>
+            </div>
+
+            <div class="explanation">
+                <h3>Why is this vulnerable?</h3>
+                <p>
+                    The vulnerable login system has these issues:
+                </p>
+                <pre><code># No proper session validation
+# No role-based access control
+# Admin endpoints accessible to all logged-in users</code></pre>
+                <p>
+                    Once logged in, users can directly access sensitive endpoints like 
+                    <code>/vulnerable/admin</code> without any role verification.
+                </p>
+            </div>
+
+            <div class="login-form-container">
+                <form method="POST" action="{{ url_for('vulnerable_login') }}">
+                    <div class="form-group">
+                        <label for="username">Username:</label>
+                        <input type="text" id="username" name="username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password:</label>
+                        <input type="password" id="password" name="password" required>
+                    </div>
+                    <button type="submit" class="btn btn-danger">Login (Vulnerable)</button>
+                </form>
+            </div>
+
+            {% if error %}
+            <div class="message-box error">
+                <p>{{ error }}</p>
+            </div>
+            {% endif %}
+
+            <div class="test-cases">
+                <h3>Test Credentials:</h3>
+                <div class="test-case">
+                    <p><strong>Admin:</strong> <code>admin</code> / <code>admin123</code></p>
+                </div>
+                <div class="test-case">
+                    <p><strong>Regular User:</strong> <code>user</code> / <code>user123</code></p>
+                </div>
+                <div class="test-case">
+                    <p><strong>Another User:</strong> <code>user2</code> / <code>user123</code></p>
+                </div>
+            </div>
+
+            <div class="back-link">
+                <a href="{{ url_for('vulnerable_index') }}" class="btn btn-secondary">← Back to Vulnerable Demo</a>
+            </div>
+        </main>
+
+        <footer>
+            <p>
+                ⚠️ This is for educational purposes only. Never use vulnerable code in production.
+            </p>
+        </footer>
+    </div>
+</body>
+</html>

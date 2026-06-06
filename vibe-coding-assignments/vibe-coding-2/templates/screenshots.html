@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Screenshots - Broken Access Control Demo</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Screenshots Required</h1>
+            <h2>Broken Access Control Assignment</h2>
+            <p class="subtitle">List of screenshots needed for assignment submission</p>
+        </header>
+
+        <main>
+            <div class="intro">
+                <p>
+                    This page lists all the screenshots you need to capture for your assignment submission. 
+                    Take screenshots of each scenario described below to demonstrate your understanding of 
+                    Broken Access Control vulnerabilities and their fixes.
+                </p>
+            </div>
+
+            <div class="screenshots-list">
+                <h3>Required Screenshots</h3>
+
+                <div class="screenshot-item">
+                    <h4>1. Landing Page</h4>
+                    <p>
+                        <strong>Description:</strong> The main landing page showing the project overview, 
+                        explanation of Broken Access Control, and buttons for Vulnerable Demo and Secure Demo.
+                    </p>
+                    <p>
+                        <strong>URL:</strong> <code>http://localhost:5002/</code>
+                    </p>
+                    <p>
+                        <strong>What to capture:</strong> The complete landing page with both demo options visible.
+                    </p>
+                </div>
+
+                <div class="screenshot-item">
+                    <h4>2. Vulnerable Admin Access</h4>
+                    <p>
+                        <strong>Description:</strong> Demonstrate that a regular user can access the admin panel 
+                        by typing the URL directly in the vulnerable demo.
+                    </p>
+                    <p>
+                        <strong>Steps:</strong>
+                    </p>
+                    <ol>
+                        <li>Login as regular user (<code>user</code> / <code>user123</code>) in vulnerable demo</li>
+                        <li>Navigate directly to <code>/vulnerable/admin</code></li>
+                        <li>Capture the admin panel showing you accessed it as a regular user</li>
+                    </ol>
+                    <p>
+                        <strong>What to capture:</strong> The vulnerable admin panel showing the regular user's 
+                        username and role, demonstrating unauthorized access.
+                    </p>
+                </div>
+
+                <div class="screenshot-item">
+                    <h4>3. Vulnerable Profile Access (IDOR)</h4>
+                    <p>
+                        <strong>Description:</strong> Demonstrate the IDOR vulnerability where a regular user 
+                        can view another user's profile by changing the ID in the URL.
+                    </p>
+                    <p>
+                        <strong>Steps:</strong>
+                    </p>
+                    <ol>
+                        <li>Login as regular user (<code>user</code> / <code>user123</code>) in vulnerable demo</li>
+                        <li>Navigate to <code>/vulnerable/profile/1</code> (admin's profile)</li>
+                        <li>Capture the profile page showing you can view another user's data</li>
+                    </ol>
+                    <p>
+                        <strong>What to capture:</strong> The vulnerable profile page showing the IDOR warning 
+                        and the admin's profile data visible to a regular user.
+                    </p>
+                </div>
+
+                <div class="screenshot-item">
+                    <h4>4. Secure Admin Protection (403)</h4>
+                    <p>
+                        <strong>Description:</strong> Demonstrate that the secure implementation properly blocks 
+                        regular users from accessing the admin panel with a 403 error.
+                    </p>
+                    <p>
+                        <strong>Steps:</strong>
+                    </p>
+                    <ol>
+                        <li>Login as regular user (<code>user</code> / <code>user123</code>) in secure demo</li>
+                        <li>Try to navigate directly to <code>/secure/admin</code></li>
+                        <li>Capture the 403 Access Denied page</li>
+                    </ol>
+                    <p>
+                        <strong>What to capture:</strong> The 403 Access Denied page showing the secure access 
+                        control working correctly.
+                    </p>
+                </div>
+
+                <div class="screenshot-item">
+                    <h4>5. Secure Profile Protection</h4>
+                    <p>
+                        <strong>Description:</strong> Demonstrate that the secure implementation prevents IDOR 
+                        by blocking users from viewing other users' profiles.
+                    </p>
+                    <p>
+                        <strong>Steps:</strong>
+                    </p>
+                    <ol>
+                        <li>Login as regular user (<code>user</code> / <code>user123</code>) in secure demo</li>
+                        <li>Try to navigate to <code>/secure/profile/1</code> (admin's profile)</li>
+                        <li>Capture the 403 Access Denied page</li>
+                    </ol>
+                    <p>
+                        <strong>What to capture:</strong> The 403 Access Denied page showing the IDOR protection 
+                        working correctly.
+                    </p>
+                </div>
+
+                <div class="screenshot-item">
+                    <h4>6. Secure Admin Access (Authorized)</h4>
+                    <p>
+                        <strong>Description:</strong> Demonstrate that an admin user can properly access the admin 
+                        panel in the secure implementation.
+                    </p>
+                    <p>
+                        <strong>Steps:</strong>
+                    </p>
+                    <ol>
+                        <li>Login as admin (<code>admin</code> / <code>admin123</code>) in secure demo</li>
+                        <li>Navigate to <code>/secure/admin</code></li>
+                        <li>Capture the admin panel showing successful authorized access</li>
+                    </ol>
+                    <p>
+                        <strong>What to capture:</strong> The secure admin panel showing the admin's username 
+                        and role, demonstrating proper authorized access.
+                    </p>
+                </div>
+            </div>
+
+            <div class="tips">
+                <h3>Screenshot Tips</h3>
+                <ul>
+                    <li>Use your browser's screenshot function or a tool like Snipping Tool</li>
+                    <li>Make sure the URL bar is visible to show the route being accessed</li>
+                    <li>Capture the full page content, not just a portion</li>
+                    <li>Save screenshots in PNG or JPG format</li>
+                    <li>Name screenshots descriptively (e.g., <code>vulnerable-admin-access.png</code>)</li>
+                </ul>
+            </div>
+
+            <div class="back-link">
+                <a href="{{ url_for('index') }}" class="btn btn-secondary">← Back to Home</a>
+            </div>
+        </main>
+
+        <footer>
+            <p>
+                📸 Follow this checklist to capture all required screenshots for your assignment.
+            </p>
+        </footer>
+    </div>
+</body>
+</html>
