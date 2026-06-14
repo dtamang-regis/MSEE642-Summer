@@ -100,7 +100,6 @@ If Nessus were to be used against Metasploitable2 in a lab environment, the proc
 
 During the scan, Nessus would probe Metasploitable2's open ports, identify running services and their versions, and check for known vulnerabilities associated with those services. Given that Metasploitable2 is intentionally designed with numerous vulnerabilities for educational purposes, Nessus would likely detect many security issues, including outdated service versions, default credentials, and known exploitable vulnerabilities. The results would be presented in a detailed report showing each discovered vulnerability, its severity rating, associated CVE references, and recommended remediation steps.
 
-![Nessus Screenshot](images/nessus.png)
 
 ### Conclusion
 
