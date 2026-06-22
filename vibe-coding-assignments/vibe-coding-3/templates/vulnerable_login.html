@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vulnerable Authentication Demo - OWASP A07:2026</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🚨 Vulnerable Authentication Demo</h1>
+            <p class="subtitle">OWASP A07:2026 - Authentication Failures</p>
+            <a href="/" class="back-link">← Back to Home</a>
+        </header>
+
+        <div class="warning-banner">
+            <strong>⚠️ THIS IS INTENTIONALLY VULNERABLE</strong>
+            <p>This login system has NO security controls. It demonstrates what NOT to do in production.</p>
+        </div>
+
+        <div class="main-content">
+            <div class="login-section">
+                <div class="login-form-container">
+                    <h2>Login Form</h2>
+                    <p class="form-description">No password requirements, no rate limiting, plain text storage</p>
+                    
+                    <form method="POST" action="/vulnerable" class="login-form">
+                        <div class="form-group">
+                            <label for="username">Username:</label>
+                            <input type="text" id="username" name="username" placeholder="Enter username" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Password:</label>
+                            <input type="password" id="password" name="password" placeholder="Enter password" required>
+                        </div>
+                        <button type="submit" class="btn btn-danger">Login (Vulnerable)</button>
+                    </form>
+
+                    {% if message %}
+                    <div class="message {{ 'success' if success else 'error' }}">
+                        {{ message }}
+                    </div>
+                    {% endif %}
+
+                    {% if attack_info %}
+                    <div class="attack-info">
+                        {{ attack_info }}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="demo-users-container">
+                    <h2>Demo Users</h2>
+                    <p class="warning-text">Passwords stored in PLAIN TEXT (vulnerable!)</p>
+                    <div class="user-list">
+                        <div class="user-item">
+                            <strong>Username:</strong> admin<br>
+                            <strong>Password:</strong> 123456
+                        </div>
+                        <div class="user-item">
+                            <strong>Username:</strong> user<br>
+                            <strong>Password:</strong> password
+                        </div>
+                        <div class="user-item">
+                            <strong>Username:</strong> john<br>
+                            <strong>Password:</strong> qwerty
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="attack-section">
+                <h2>Automated Attack Simulations</h2>
+                <p>Click these buttons to simulate common authentication attacks:</p>
+                
+                <div class="attack-buttons">
+                    <form method="POST" action="/vulnerable" class="attack-form">
+                        <input type="hidden" name="username" value="admin">
+                        <input type="hidden" name="password" value="123456">
+                        <input type="hidden" name="attack_type" value="weak_password">
+                        <button type="submit" class="btn btn-warning">Simulate Weak Password Login</button>
+                    </form>
+
+                    <form method="POST" action="/vulnerable" class="attack-form">
+                        <input type="hidden" name="username" value="admin">
+                        <input type="hidden" name="password" value="password">
+                        <input type="hidden" name="attack_type" value="password_guessing">
+                        <button type="submit" class="btn btn-warning">Simulate Password Guessing</button>
+                    </form>
+
+                    <form method="POST" action="/vulnerable" class="attack-form">
+                        <input type="hidden" name="username" value="admin">
+                        <input type="hidden" name="password" value="admin">
+                        <input type="hidden" name="attack_type" value="common_password">
+                        <button type="submit" class="btn btn-warning">Simulate Common Password Attack</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="attempts-log-section">
+                <h2>Login Attempt Log</h2>
+                <p>Real-time feed of all login attempts:</p>
+                <div class="attempts-log">
+                    {% for attempt in attempts %}
+                    <div class="log-entry {{ 'success' if attempt.success else 'failed' }}">
+                        <span class="log-time">{{ attempt.attempt_time }}</span>
+                        <span class="log-username">{{ attempt.username or 'Unknown' }}</span>
+                        <span class="log-status">{{ '✓ Success' if attempt.success else '✗ Failed' }}</span>
+                        {% if attempt.attack_type %}
+                        <span class="log-attack-type">({{ attempt.attack_type }})</span>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="education-section">
+                <h2>Why This Is Vulnerable</h2>
+                <div class="vulnerability-card">
+                    <h3>1. Plain Text Password Storage</h3>
+                    <p>Passwords are stored in plain text in the database. If the database is compromised, all passwords are immediately exposed.</p>
+                    <p><strong>Fix:</strong> Use bcrypt, Argon2, or scrypt to hash passwords with a unique salt.</p>
+                </div>
+
+                <div class="vulnerability-card">
+                    <h3>2. No Password Complexity Requirements</h3>
+                    <p>Users can set extremely weak passwords like "123456" or "password".</p>
+                    <p><strong>Fix:</strong> Enforce minimum length, complexity requirements (uppercase, lowercase, numbers, special characters).</p>
+                </div>
+
+                <div class="vulnerability-card">
+                    <h3>3. No Rate Limiting</h3>
+                    <p>Attackers can make unlimited login attempts without any restrictions.</p>
+                    <p><strong>Fix:</strong> Implement rate limiting (e.g., 5 requests per minute per IP).</p>
+                </div>
+
+                <div class="vulnerability-card">
+                    <h3>4. No Account Lockout</h3>
+                    <p>Accounts are never locked out, allowing unlimited brute force attempts.</p>
+                    <p><strong>Fix:</strong> Lock accounts after a certain number of failed attempts (e.g., 5 attempts).</p>
+                </div>
+
+                <div class="vulnerability-card">
+                    <h3>5. Specific Error Messages</h3>
+                    <p>Error messages reveal whether a username exists, enabling username enumeration attacks.</p>
+                    <p><strong>Fix:</strong> Use generic error messages like "Invalid credentials".</p>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>This is an educational demonstration of authentication vulnerabilities.</p>
+            <a href="/compare">View Side-by-Side Comparison →</a>
+        </footer>
+    </div>
+
+    <script src="/static/script.js"></script>
+</body>
+</html>

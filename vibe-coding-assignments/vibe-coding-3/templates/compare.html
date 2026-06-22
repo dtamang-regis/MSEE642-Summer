@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comparison - OWASP A07:2026 Authentication Failures</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>⚖️ Side-by-Side Comparison</h1>
+            <p class="subtitle">Vulnerable vs Secure Authentication</p>
+            <a href="/" class="back-link">← Back to Home</a>
+        </header>
+
+        <div class="comparison-stats">
+            <h2>Live Statistics</h2>
+            <div class="stats-grid">
+                <div class="stat-card vulnerable">
+                    <h3>🚨 Vulnerable System</h3>
+                    <p>Total Attempts: {{ vulnerable_total }}</p>
+                    <p>Successful Logins: {{ vulnerable_success }}</p>
+                    <p>Success Rate: {% if vulnerable_total > 0 %}{{ (vulnerable_success / vulnerable_total * 100)|round(1) }}{% else %}0{% endif %}%</p>
+                </div>
+                <div class="stat-card secure">
+                    <h3>🛡️ Secure System</h3>
+                    <p>Total Attempts: {{ secure_total }}</p>
+                    <p>Successful Logins: {{ secure_success }}</p>
+                    <p>Success Rate: {% if secure_total > 0 %}{{ (secure_success / secure_total * 100)|round(1) }}{% else %}0{% endif %}%</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="comparison-table">
+            <h2>Feature Comparison</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>🚨 Vulnerable</th>
+                        <th>🛡️ Secure</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Password Storage</td>
+                        <td class="vulnerable">Plain Text</td>
+                        <td class="secure">bcrypt Hash</td>
+                    </tr>
+                    <tr>
+                        <td>Password Complexity</td>
+                        <td class="vulnerable">No Requirements</td>
+                        <td class="secure">Enforced (8+ chars, mixed case, numbers, special)</td>
+                    </tr>
+                    <tr>
+                        <td>Rate Limiting</td>
+                        <td class="vulnerable">None</td>
+                        <td class="secure">5 requests/minute per IP</td>
+                    </tr>
+                    <tr>
+                        <td>Account Lockout</td>
+                        <td class="vulnerable">None</td>
+                        <td class="secure">5 attempts → 5 min lockout</td>
+                    </tr>
+                    <tr>
+                        <td>Error Messages</td>
+                        <td class="vulnerable">Specific (reveals username existence)</td>
+                        <td class="secure">Generic ("Invalid credentials")</td>
+                    </tr>
+                    <tr>
+                        <td>SQL Injection Protection</td>
+                        <td class="vulnerable">None (string concatenation)</td>
+                        <td class="secure">Parameterized queries</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="code-comparison">
+            <h2>Code Comparison</h2>
+            
+            <div class="code-section">
+                <h3>Password Storage</h3>
+                <div class="code-blocks">
+                    <div class="code-block vulnerable">
+                        <h4>🚨 Vulnerable Code</h4>
+                        <pre><code># Plain text storage - NEVER do this!
+conn.execute('INSERT INTO users (username, password) VALUES (?, ?)', 
+            (username, password))</code></pre>
+                    </div>
+                    <div class="code-block secure">
+                        <h4>🛡️ Secure Code</h4>
+                        <pre><code># bcrypt hashing - ALWAYS do this!
+hashed = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+conn.execute('INSERT INTO users (username, password_hash) VALUES (?, ?)', 
+            (username, hashed.decode('utf-8')))</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="code-section">
+                <h3>Login Query</h3>
+                <div class="code-blocks">
+                    <div class="code-block vulnerable">
+                        <h4>🚨 Vulnerable Code</h4>
+                        <pre><code># String concatenation - SQL Injection vulnerable!
+query = f"SELECT * FROM users WHERE username = '{username}' AND password = '{password}'"
+cursor = conn.execute(query)</code></pre>
+                    </div>
+                    <div class="code-block secure">
+                        <h4>🛡️ Secure Code</h4>
+                        <pre><code># Parameterized query - SQL Injection safe!
+query = "SELECT * FROM users WHERE username = ? AND password_hash = ?"
+cursor = conn.execute(query, (username, hashed_password))</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="code-section">
+                <h3>Password Verification</h3>
+                <div class="code-blocks">
+                    <div class="code-block vulnerable">
+                        <h4>🚨 Vulnerable Code</h4>
+                        <pre><code># Plain text comparison
+if user['password'] == password:
+    # Login successful</code></pre>
+                    </div>
+                    <div class="code-block secure">
+                        <h4>🛡️ Secure Code</h4>
+                        <pre><code># bcrypt verification
+if bcrypt.checkpw(password.encode('utf-8'), user['password_hash'].encode('utf-8')):
+    # Login successful</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="code-section">
+                <h3>Error Messages</h3>
+                <div class="code-blocks">
+                    <div class="code-block vulnerable">
+                        <h4>🚨 Vulnerable Code</h4>
+                        <pre><code># Reveals username existence - enables enumeration
+if not user:
+    return "Username not found"
+if user['password'] != password:
+    return "Incorrect password"</code></pre>
+                    </div>
+                    <div class="code-block secure">
+                        <h4>🛡️ Secure Code</h4>
+                        <pre><code># Generic message - prevents enumeration
+if not user or not bcrypt.checkpw(...):
+    return "Invalid credentials"</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="recommendations">
+            <h2>Security Recommendations</h2>
+            <div class="recommendation-list">
+                <div class="recommendation">
+                    <h3>1. Always Hash Passwords</h3>
+                    <p>Use bcrypt, Argon2, or scrypt with a unique salt for each password. Never store passwords in plain text or with fast hashes like MD5 or SHA-1.</p>
+                </div>
+                <div class="recommendation">
+                    <h3>2. Enforce Password Complexity</h3>
+                    <p>Require minimum length (8+ characters), mixed case, numbers, and special characters. Consider using password strength meters.</p>
+                </div>
+                <div class="recommendation">
+                    <h3>3. Implement Rate Limiting</h3>
+                    <p>Limit login attempts per IP address (e.g., 5-10 requests per minute) to prevent automated attacks.</p>
+                </div>
+                <div class="recommendation">
+                    <h3>4. Use Account Lockout</h3>
+                    <p>Lock accounts after multiple failed attempts (e.g., 5 attempts) for a reasonable time period (e.g., 5-30 minutes).</p>
+                </div>
+                <div class="recommendation">
+                    <h3>5. Use Generic Error Messages</h3>
+                    <p>Return generic error messages like "Invalid credentials" to prevent username enumeration attacks.</p>
+                </div>
+                <div class="recommendation">
+                    <h3>6. Implement Multi-Factor Authentication (MFA)</h3>
+                    <p>Add an extra layer of security with MFA, especially for sensitive accounts and administrative access.</p>
+                </div>
+                <div class="recommendation">
+                    <h3>7. Monitor for Suspicious Activity</h3>
+                    <p>Log and monitor login attempts for patterns that may indicate brute force attacks or credential stuffing.</p>
+                </div>
+                <div class="recommendation">
+                    <h3>8. Use Parameterized Queries</h3>
+                    <p>Always use parameterized queries or prepared statements to prevent SQL injection attacks.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="reset-section">
+            <h2>Reset Demo</h2>
+            <p>Clear all login attempts and lockouts to start fresh.</p>
+            <button onclick="resetDemo()" class="btn btn-primary">Reset Demo</button>
+        </div>
+
+        <footer>
+            <p>This comparison demonstrates the importance of proper authentication security.</p>
+            <a href="/vulnerable">Try Vulnerable Demo</a> | 
+            <a href="/secure">Try Secure Demo</a>
+        </footer>
+    </div>
+
+    <script src="/static/script.js"></script>
+</body>
+</html>

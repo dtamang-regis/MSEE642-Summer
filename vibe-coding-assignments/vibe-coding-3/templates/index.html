@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OWASP A07:2026 - Authentication Failures Educational Demo</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔐 OWASP A07:2026 - Authentication Failures</h1>
+            <p class="subtitle">Educational Security Demonstration</p>
+        </header>
+
+        <div class="warning-banner">
+            <strong>⚠️ EDUCATIONAL PURPOSES ONLY</strong>
+            <p>This application intentionally contains insecure authentication code to demonstrate common vulnerabilities. Never use the vulnerable patterns in any production system.</p>
+        </div>
+
+        <section class="intro-section">
+            <h2>What Are Authentication Failures?</h2>
+            <p>Authentication Failures occur when an application does not properly verify the identity of users. This category includes:</p>
+            <ul>
+                <li>Allowing weak or well-known passwords</li>
+                <li>Storing passwords in plain text or with weak hashing</li>
+                <li>No protection against automated attacks (brute force, credential stuffing)</li>
+                <li>Missing rate limiting and account lockout mechanisms</li>
+                <li>Exposing sensitive information in error messages</li>
+            </ul>
+        </section>
+
+        <section class="danger-section">
+            <h2>Why Are They Dangerous?</h2>
+            <p>Authentication failures can lead to:</p>
+            <ul>
+                <li>🔓 Full account takeovers</li>
+                <li>💳 Financial fraud through compromised accounts</li>
+                <li>📊 Data breaches exposing millions of user records</li>
+                <li>🏢 Ransomware deployment through compromised admin accounts</li>
+                <li>⚖️ Legal liability and reputational damage</li>
+            </ul>
+        </section>
+
+        <section class="demo-section">
+            <h2>Interactive Demo Options</h2>
+            <div class="demo-cards">
+                <div class="demo-card vulnerable">
+                    <h3>🚨 Vulnerable Authentication</h3>
+                    <p>Experience a login system with no security controls:</p>
+                    <ul>
+                        <li>Plain text password storage</li>
+                        <li>No password complexity requirements</li>
+                        <li>No rate limiting</li>
+                        <li>No account lockout</li>
+                        <li>Automated attack simulations</li>
+                    </ul>
+                    <a href="/vulnerable" class="btn btn-danger">Try Vulnerable Demo</a>
+                </div>
+
+                <div class="demo-card secure">
+                    <h3>🛡️ Secure Authentication</h3>
+                    <p>Experience a properly secured login system:</p>
+                    <ul>
+                        <li>bcrypt password hashing</li>
+                        <li>Password complexity requirements</li>
+                        <li>Rate limiting (5 requests/minute)</li>
+                        <li>Account lockout (5 failed attempts)</li>
+                        <li>Generic error messages</li>
+                    </ul>
+                    <a href="/secure" class="btn btn-success">Try Secure Demo</a>
+                </div>
+            </div>
+        </section>
+
+        <section class="comparison-section">
+            <h2>Side-by-Side Comparison</h2>
+            <p>See the differences between vulnerable and secure implementations side by side.</p>
+            <a href="/compare" class="btn btn-primary">View Comparison</a>
+        </section>
+
+        <section class="instructions-section">
+            <h2>How to Use This Demo</h2>
+            <ol>
+                <li>Start with the <strong>Vulnerable Demo</strong> to see how easy it is to compromise weak authentication</li>
+                <li>Try the automated attack buttons to simulate brute force and password guessing attacks</li>
+                <li>Move to the <strong>Secure Demo</strong> to see how proper security controls prevent these attacks</li>
+                <li>Use the <strong>Comparison Page</strong> to see code snippets and statistics</li>
+                <li>Read the educational panels to understand why each vulnerability exists and how to fix it</li>
+            </ol>
+        </section>
+
+        <section class="stats-section">
+            <h2>Live Activity</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>Vulnerable System</h3>
+                    <p>Recent attempts: {{ vulnerable_attempts|length }}</p>
+                    <div class="attempts-list">
+                        {% for attempt in vulnerable_attempts %}
+                        <div class="attempt-item {{ 'success' if attempt.success else 'failed' }}">
+                            {{ attempt.username or 'Unknown' }} - {{ '✓' if attempt.success else '✗' }}
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <h3>Secure System</h3>
+                    <p>Recent attempts: {{ secure_attempts|length }}</p>
+                    <div class="attempts-list">
+                        {% for attempt in secure_attempts %}
+                        <div class="attempt-item {{ 'success' if attempt.success else 'failed' }}">
+                            {{ attempt.username or 'Unknown' }} - {{ '✓' if attempt.success else '✗' }}
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <p>This educational tool was created to demonstrate OWASP A07:2026 Authentication Failures.</p>
+            <p>For educational purposes only. Do not use vulnerable code in production.</p>
+        </footer>
+    </div>
+
+    <script src="/static/script.js"></script>
+</body>
+</html>

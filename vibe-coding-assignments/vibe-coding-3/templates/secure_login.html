@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Authentication Demo - OWASP A07:2026</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🛡️ Secure Authentication Demo</h1>
+            <p class="subtitle">OWASP A07:2026 - Authentication Failures</p>
+            <a href="/" class="back-link">← Back to Home</a>
+        </header>
+
+        <div class="success-banner">
+            <strong>✅ THIS IS SECURELY IMPLEMENTED</strong>
+            <p>This login system uses industry best practices for authentication security.</p>
+        </div>
+
+        <div class="main-content">
+            <div class="login-section">
+                <div class="login-form-container">
+                    <h2>Login Form</h2>
+                    <p class="form-description">Password hashing, rate limiting, account lockout</p>
+                    
+                    <form method="POST" action="/secure" class="login-form">
+                        <div class="form-group">
+                            <label for="username">Username:</label>
+                            <input type="text" id="username" name="username" placeholder="Enter username" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Password:</label>
+                            <input type="password" id="password" name="password" placeholder="Enter password" required>
+                        </div>
+                        <button type="submit" class="btn btn-success">Login (Secure)</button>
+                    </form>
+
+                    <div class="password-requirements">
+                        <h3>Password Requirements:</h3>
+                        <ul>
+                            <li>Minimum 8 characters</li>
+                            <li>At least one uppercase letter</li>
+                            <li>At least one lowercase letter</li>
+                            <li>At least one number</li>
+                            <li>At least one special character</li>
+                        </ul>
+                    </div>
+
+                    {% if message %}
+                    <div class="message {{ 'success' if success else 'error' }}">
+                        {{ message }}
+                    </div>
+                    {% endif %}
+
+                    {% if lockout_info %}
+                    <div class="lockout-warning">
+                        {{ lockout_info }}
+                    </div>
+                    {% endif %}
+
+                    {% if rate_limit_info %}
+                    <div class="rate-limit-warning">
+                        {{ rate_limit_info }}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="demo-users-container">
+                    <h2>Demo Users</h2>
+                    <p class="secure-text">Passwords stored as bcrypt hashes (secure!)</p>
+                    <div class="user-list">
+                        <div class="user-item">
+                            <strong>Username:</strong> admin<br>
+                            <strong>Password:</strong> Admin@Secure123
+                        </div>
+                        <div class="user-item">
+                            <strong>Username:</strong> user<br>
+                            <strong>Password:</strong> User@Secure456
+                        </div>
+                        <div class="user-item">
+                            <strong>Username:</strong> john<br>
+                            <strong>Password:</strong> John@Secure789
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="security-controls-section">
+                <h2>Active Security Controls</h2>
+                <div class="security-controls">
+                    <div class="security-control">
+                        <h3>🔐 bcrypt Password Hashing</h3>
+                        <p>Passwords are hashed using bcrypt with a unique salt, making them computationally infeasible to crack.</p>
+                    </div>
+
+                    <div class="security-control">
+                        <h3>⏱️ Rate Limiting</h3>
+                        <p>Limited to 5 login requests per minute per IP address to prevent automated attacks.</p>
+                    </div>
+
+                    <div class="security-control">
+                        <h3>🔒 Account Lockout</h3>
+                        <p>Accounts are locked for 5 minutes after 5 failed login attempts.</p>
+                    </div>
+
+                    <div class="security-control">
+                        <h3>🎭 Generic Error Messages</h3>
+                        <p>Error messages don't reveal whether a username exists, preventing username enumeration.</p>
+                    </div>
+
+                    <div class="security-control">
+                        <h3>📝 Parameterized Queries</h3>
+                        <p>Database queries use parameterized statements to prevent SQL injection.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="attempts-log-section">
+                <h2>Login Attempt Log</h2>
+                <p>Real-time feed of all login attempts:</p>
+                <div class="attempts-log">
+                    {% for attempt in attempts %}
+                    <div class="log-entry {{ 'success' if attempt.success else 'failed' }}">
+                        <span class="log-time">{{ attempt.attempt_time }}</span>
+                        <span class="log-username">{{ attempt.username or 'Unknown' }}</span>
+                        <span class="log-status">{{ '✓ Success' if attempt.success else '✗ Failed' }}</span>
+                        {% if attempt.attack_type %}
+                        <span class="log-attack-type">({{ attempt.attack_type }})</span>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="education-section">
+                <h2>Why This Is Secure</h2>
+                <div class="security-card">
+                    <h3>1. bcrypt Password Hashing</h3>
+                    <p>Passwords are hashed using bcrypt with a unique salt. Even if the database is compromised, attackers cannot recover the original passwords.</p>
+                    <p><strong>Implementation:</strong> bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())</p>
+                </div>
+
+                <div class="security-card">
+                    <h3>2. Password Complexity Requirements</h3>
+                    <p>Users must create strong passwords that meet complexity requirements, making them resistant to brute force attacks.</p>
+                    <p><strong>Implementation:</strong> Enforce minimum length, uppercase, lowercase, numbers, and special characters.</p>
+                </div>
+
+                <div class="security-card">
+                    <h3>3. Rate Limiting</h3>
+                    <p>IP addresses are limited to 5 requests per minute, preventing automated brute force attacks.</p>
+                    <p><strong>Implementation:</strong> Track request timestamps per IP and reject excess requests.</p>
+                </div>
+
+                <div class="security-card">
+                    <h3>4. Account Lockout</h3>
+                    <p>Accounts are locked after 5 failed attempts for 5 minutes, dramatically slowing down brute force attacks.</p>
+                    <p><strong>Implementation:</strong> Track failed attempts per username and enforce temporary lockouts.</p>
+                </div>
+
+                <div class="security-card">
+                    <h3>5. Generic Error Messages</h3>
+                    <p>Error messages don't reveal whether a username exists, preventing username enumeration attacks.</p>
+                    <p><strong>Implementation:</strong> Always return "Invalid credentials" regardless of which field is incorrect.</p>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>This demonstrates secure authentication best practices.</p>
+            <a href="/compare">View Side-by-Side Comparison →</a>
+        </footer>
+    </div>
+
+    <script src="/static/script.js"></script>
+</body>
+</html>
